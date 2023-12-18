@@ -12,6 +12,8 @@ import Group from '../model/group';
 import data from '../util/data';
 import JSZip from 'jszip';
 import fs from 'fs';
+import console from "console";
+import {getRoutine} from "../util/settings";
 
 const requestRegex = new RegExp(`${settings.get().mqtt.base_topic}/bridge/request/(.*)`);
 
@@ -40,6 +42,10 @@ export default class Bridge extends Extension {
             'group/options': this.groupOptions,
             'group/remove': this.groupRemove,
             'group/rename': this.groupRename,
+            'routine/add': this.routineAdd,
+            'routine/options': this.routineOptions,
+            'routine/remove': this.routineRemove,
+            'routine/trigger': this.routineTrigger,
             'permit_join': this.permitJoin,
             'restart': this.restart,
             'backup': this.backup,
@@ -147,6 +153,10 @@ export default class Bridge extends Extension {
         return this.changeEntityOptions('group', message);
     }
 
+    @bind async routineOptions(message: KeyValue | string): Promise<MQTTResponse> {
+        return this.changeEntityOptions('group', message);
+    }
+
     @bind async bridgeOptions(message: KeyValue | string): Promise<MQTTResponse> {
         if (typeof message !== 'object' || typeof message.options !== 'object') {
             throw new Error(`Invalid payload`);
@@ -182,6 +192,10 @@ export default class Bridge extends Extension {
         return this.removeEntity('group', message);
     }
 
+    @bind async routineRemove(message: string | KeyValue): Promise<MQTTResponse> {
+        return this.removeEntity('group', message);
+    }
+
     @bind async healthCheck(message: string | KeyValue): Promise<MQTTResponse> {
         return utils.getResponse(message, {healthy: true}, null);
     }
@@ -207,12 +221,65 @@ export default class Bridge extends Extension {
         return utils.getResponse(message, {friendly_name: group.friendly_name, id: group.ID}, null);
     }
 
+    @bind async routineAdd(message: string | KeyValue): Promise<MQTTResponse> {
+        if (typeof message !== 'object' || !message.hasOwnProperty('friendly_name')) {
+            throw new Error(`Invalid payload`);
+        }
+        const routine = settings.addRoutine(message as unknown as RoutineOptions);
+
+        return utils.getResponse(message, routine, null);
+    }
+
     @bind async deviceRename(message: string | KeyValue): Promise<MQTTResponse> {
         return this.renameEntity('device', message);
     }
 
     @bind async groupRename(message: string | KeyValue): Promise<MQTTResponse> {
         return this.renameEntity('group', message);
+    }
+
+    @bind async routineTrigger(message: string | KeyValue): Promise<MQTTResponse> {
+        if (typeof message === 'object' && !message.hasOwnProperty('friendly_name')) {
+            throw new Error(`Invalid payload`);
+        }
+
+        const friendlyName = typeof message === 'object' ? message.friendly_name : message;
+        const ID = typeof message === 'object' && message.hasOwnProperty('ID') ? message.ID : null;
+        // const routine = settings.triggerRoutine(friendlyName, ID);
+
+        const routine = getRoutine(ID ? ID : friendlyName);
+        if (!routine) {
+            throw new Error(`Routine '${friendlyName}' does not exist`);
+        }
+
+        const actions = routine.actions;
+        for (let action of actions) {
+            switch (action.type) {
+                case "OPERATE_DEVICE":
+                    const deviceName = action.device;
+                    const deviceMessage = action.attributes;
+
+                    // const device = this.zigbee.resolveEntity(deviceName);
+                    // this.publishEntityState(device, deviceMessage);
+
+                    // this.mqtt.publish(deviceName + "/set", JSON.stringify(deviceMessage));
+                    // this.mqtt.onMessage(`${this.mqttBaseTopic}/${topic}`, Buffer.from(stringify(payload)));
+
+                    const topicToPublish = settings.get().mqtt.base_topic + "/" + deviceName + "/set";
+                    this.eventBus.emitRoutinePublish({topic: topicToPublish, message: JSON.stringify(deviceMessage)})
+
+                    console.log("operating device: " + action.device);
+                    break;
+                case "DELAY":
+                    console.log("taking a nap: " + action.seconds);
+                    break;
+                default:
+                    console.log("Unknown routine action");
+                    break;
+            }
+        }
+
+        return utils.getResponse(message, routine, null);
     }
 
     @bind async restart(message: string | KeyValue): Promise<MQTTResponse> {

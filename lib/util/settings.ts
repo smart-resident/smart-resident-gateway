@@ -5,6 +5,7 @@ import path from 'path';
 import yaml from './yaml';
 import Ajv, {ValidateFunction} from 'ajv';
 import schemaJson from './settings.schema.json';
+import * as console from "console";
 export let schema = schemaJson;
 // @ts-ignore
 schema = {};
@@ -672,6 +673,79 @@ export function removeGroup(IDorName: string | number): void {
     const groupID = getGroupThrowIfNotExists(IDorName.toString()).ID;
     const settings = getInternalSettings();
     delete settings.groups[groupID];
+    write();
+}
+
+export function getRoutine(IDorName: string | number): RoutineOptions {
+    const settings = get();
+    if (!settings.routines) {
+        return null;
+    }
+
+    const byID = settings.routines[IDorName];
+    if (byID) {
+        return byID;
+    }
+
+    for (const [ID, routine] of Object.entries(settings.routines)) {
+        if (routine.friendly_name === IDorName) {
+            return routine;
+        }
+    }
+
+    return null;
+}
+
+export function getRoutines(): RoutineOptions[] {
+    const settings = get();
+    return Object.entries(settings.routines).map(([ID, routine]) => {
+        return routine;
+    });
+}
+
+export function addRoutine(routine: RoutineOptions): RoutineOptions {
+    let name = routine.friendly_name;
+    let ID = routine.ID.toString();
+    utils.validateFriendlyName(name, true);
+    if (getRoutine(name)) {
+        throw new Error(`friendly_name '${name}' is already in use`);
+    }
+
+    const settings = getInternalSettings();
+    if (!settings.routines) {
+        settings.routines = {};
+    }
+
+    if (ID == null) {
+        // look for free ID
+        ID = '1';
+        while (settings.routines.hasOwnProperty(ID)) {
+            ID = (Number.parseInt(ID) + 1).toString();
+        }
+    } else {
+        // ensure provided ID is not in use
+        ID = ID.toString();
+        if (settings.routines.hasOwnProperty(ID)) {
+            throw new Error(`Routine ID '${ID}' is already in use`);
+        }
+    }
+
+    routine.ID = Number.parseInt(ID);
+    settings.routines[ID] = routine;
+    write();
+
+    return getRoutine(ID);
+}
+
+export function removeRoutine(IDorName: string | number): void {
+    const routine = getRoutine(IDorName);
+    if (!routine) {
+        throw new Error(`Routine '${IDorName}' does not exist`);
+    }
+
+    const routineID = routine.ID;
+    const settings = getInternalSettings();
+    delete settings.routines[routineID];
     write();
 }
 

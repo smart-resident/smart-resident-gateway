@@ -161,6 +161,13 @@ export default class EventBus {
         this.on('stateChange', callback, key);
     }
 
+    public emitRoutinePublish(data: eventdata.MQTTMessage): void {
+        this.emitter.emit('routinePublish', data);
+    }
+    public onRoutinePublish(key: ListenerKey, callback: (data: eventdata.MQTTMessage) => void): void {
+        this.on('routinePublish', callback, key);
+    }
+
     private on(event: string, callback: (...args: unknown[]) => void, key: ListenerKey): void {
         if (!this.callbacksByExtension[key.constructor.name]) this.callbacksByExtension[key.constructor.name] = [];
         this.callbacksByExtension[key.constructor.name].push({event, callback});

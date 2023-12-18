@@ -21,6 +21,7 @@ import ExtensionDeviceGroupMembership from './extension/legacy/deviceGroupMember
 import ExtensionBridgeLegacy from './extension/legacy/bridgeLegacy';
 import ExtensionBridge from './extension/bridge';
 import ExtensionGroups from './extension/groups';
+import ExtensionRoutines from './extension/routines';
 import ExtensionAvailability from './extension/availability';
 import ExtensionBind from './extension/bind';
 import ExtensionReport from './extension/legacy/report';
@@ -31,7 +32,7 @@ import ExtensionExternalExtension from './extension/externalExtension';
 
 const AllExtensions = [
     ExtensionPublish, ExtensionReceive, ExtensionNetworkMap, ExtensionSoftReset, ExtensionHomeAssistant,
-    ExtensionConfigure, ExtensionDeviceGroupMembership, ExtensionBridgeLegacy, ExtensionBridge, ExtensionGroups,
+    ExtensionConfigure, ExtensionDeviceGroupMembership, ExtensionBridgeLegacy, ExtensionBridge, ExtensionGroups, ExtensionRoutines,
     ExtensionBind, ExtensionReport, ExtensionOnEvent, ExtensionOTAUpdate,
     ExtensionExternalConverters, ExtensionFrontend, ExtensionExternalExtension, ExtensionAvailability,
 ];
@@ -73,6 +74,7 @@ export class Controller {
             new ExtensionConfigure(...this.extensionArgs),
             new ExtensionNetworkMap(...this.extensionArgs),
             new ExtensionGroups(...this.extensionArgs),
+            new ExtensionRoutines(...this.extensionArgs),
             new ExtensionBind(...this.extensionArgs),
             new ExtensionOnEvent(...this.extensionArgs),
             new ExtensionOTAUpdate(...this.extensionArgs),

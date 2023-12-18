@@ -245,6 +245,7 @@ declare global {
         },
         devices?: {[s: string]: DeviceOptions},
         groups?: {[s: string]: GroupOptions},
+        routines?: {[s: string]: RoutineOptions},
         device_options: KeyValue,
         advanced: {
             legacy_api: boolean,
@@ -314,6 +315,26 @@ declare global {
         friendly_name: string,
         description?: string,
         qos?: 0 | 1 | 2,
+    }
+
+    interface RoutineOptions {
+        ID?: number,
+        sceneId: string,
+        friendly_name: string,
+        description: string,
+        conditions: RoutineCondition[],
+        actions: RoutineAction[]
+    }
+
+    interface RoutineCondition {
+        type: string
+    }
+
+    interface RoutineAction {
+        type: string,
+        device?: string,
+        attributes?: KeyValue,
+        seconds?: number
     }
 }
 
