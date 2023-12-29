@@ -705,7 +705,7 @@ export function getRoutines(): RoutineOptions[] {
 
 export function addRoutine(routine: RoutineOptions): RoutineOptions {
     let name = routine.friendly_name;
-    let ID = routine.ID.toString();
+    let ID = routine.ID?.toString();
     utils.validateFriendlyName(name, true);
     if (getRoutine(name)) {
         throw new Error(`friendly_name '${name}' is already in use`);

@@ -193,7 +193,14 @@ export default class Bridge extends Extension {
     }
 
     @bind async routineRemove(message: string | KeyValue): Promise<MQTTResponse> {
-        return this.removeEntity('group', message);
+        if (typeof message === 'object' && !message.hasOwnProperty('friendly_name')) {
+            throw new Error(`Invalid payload`);
+        }
+
+        const friendlyName = typeof message === 'object' ? message.friendly_name : message;
+        const ID = typeof message === 'object' && message.hasOwnProperty('ID') ? message.ID : null;
+        settings.removeRoutine(ID ? ID : friendlyName);
+        return utils.getResponse(message, {}, null);
     }
 
     @bind async healthCheck(message: string | KeyValue): Promise<MQTTResponse> {

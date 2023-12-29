@@ -62,10 +62,136 @@ routines:
       - type: OPERATE_DEVICE
         device: BEDROOM_1/WALL_SWITCH
         attributes:
-          state_left: "ON"
+          state_left: 'ON'
       - type: DELAY
         seconds: 10
       - type: OPERATE_DEVICE
         device: KITCHEN/WALL_SOCKET
         attributes:
-          state: "ON"
+          state: 'ON'
+  '2':
+    ID: 2
+    sceneId: test_scene_with_bridge_0
+    friendly_name: Morning Routine bridge 0
+    description: Turn bedroom on in the morning 7.00am
+    conditions:
+      - type: TAP_TO_RUN
+    actions:
+      - type: OPERATE_DEVICE
+        device: BEDROOM_1/WALL_SWITCH
+        attributes:
+          state_left: 'ON'
+      - type: DELAY
+        seconds: 10
+      - type: OPERATE_DEVICE
+        device: KITCHEN/WALL_SOCKET
+        attributes:
+          state: 'ON'
+  '3':
+    ID: 3
+    sceneId: test_scene_with_bridge_1
+    friendly_name: Morning Routine bridge 1
+    description: Turn bedroom on in the morning 7.00am
+    conditions:
+      - type: TAP_TO_RUN
+    actions:
+      - type: OPERATE_DEVICE
+        device: BEDROOM_1/WALL_SWITCH
+        attributes:
+          state_right: 'ON'
+      - type: DELAY
+        seconds: 10
+      - type: OPERATE_DEVICE
+        device: KITCHEN/WALL_SOCKET
+        attributes:
+          state: 'ON'
+  '4':
+    ID: 4
+    sceneId: test_scene_with_bridge_4
+    friendly_name: Morning Routine bridge 4
+    description: Turn bedroom on in the morning 7.00am
+    conditions:
+      - type: TAP_TO_RUN
+    actions:
+      - type: OPERATE_DEVICE
+        device: BEDROOM_1/WALL_SWITCH
+        attributes:
+          state_left: 'ON'
+      - type: DELAY
+        seconds: 10
+      - type: OPERATE_DEVICE
+        device: KITCHEN/WALL_SOCKET
+        attributes:
+          state: 'ON'
+  '5':
+    sceneId: test_scene_with_bridge_5
+    friendly_name: Morning Routine bridge 5
+    description: Turn bedroom on in the morning 7.00am
+    conditions:
+      - type: TAP_TO_RUN
+    actions:
+      - type: OPERATE_DEVICE
+        device: BEDROOM_1/WALL_SWITCH
+        attributes:
+          state_left: 'ON'
+      - type: DELAY
+        seconds: 10
+      - type: OPERATE_DEVICE
+        device: KITCHEN/WALL_SOCKET
+        attributes:
+          state: 'ON'
+    ID: 5
+  '6':
+    sceneId: test_scene_with_bridge_7.1
+    friendly_name: Evening Routine bridge 7
+    description: Turn bedroom on in the morning 7.00am
+    conditions:
+      - type: TAP_TO_RUN
+    actions:
+      - type: OPERATE_DEVICE
+        device: BEDROOM_1/WALL_SWITCH
+        attributes:
+          state_right: 'OFF'
+      - type: DELAY
+        seconds: 10
+      - type: OPERATE_DEVICE
+        device: KITCHEN/WALL_SOCKET
+        attributes:
+          state: 'OFF'
+    ID: 6
+  '7':
+    sceneId: test_scene_with_bridge_7
+    friendly_name: Morning Routine bridge 7
+    description: Turn bedroom on in the morning 7.00am
+    conditions:
+      - type: TAP_TO_RUN
+    actions:
+      - type: OPERATE_DEVICE
+        device: BEDROOM_1/WALL_SWITCH
+        attributes:
+          state_right: 'ON'
+      - type: DELAY
+        seconds: 10
+      - type: OPERATE_DEVICE
+        device: KITCHEN/WALL_SOCKET
+        attributes:
+          state: 'ON'
+    ID: 7
+  '8':
+    sceneId: test_scene_with_bridge_7
+    friendly_name: Morning Routine bridge 9
+    description: Turn bedroom on in the morning 7.00am
+    conditions:
+      - type: TAP_TO_RUN
+    actions:
+      - type: OPERATE_DEVICE
+        device: BEDROOM_1/WALL_SWITCH
+        attributes:
+          state_right: 'ON'
+      - type: DELAY
+        seconds: 10
+      - type: OPERATE_DEVICE
+        device: KITCHEN/WALL_SOCKET
+        attributes:
+          state: 'ON'
+    ID: 8
