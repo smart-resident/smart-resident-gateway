@@ -3,6 +3,7 @@ import utils from './utils';
 import objectAssignDeep from 'object-assign-deep';
 import path from 'path';
 import yaml from './yaml';
+import { randomUUID } from "crypto";
 import Ajv, {ValidateFunction} from 'ajv';
 import schemaJson from './settings.schema.json';
 import * as console from "console";
@@ -704,49 +705,49 @@ export function getRoutines(): RoutineOptions[] {
 }
 
 export function addRoutine(routine: RoutineOptions): RoutineOptions {
-    let name = routine.friendly_name;
-    let ID = routine.ID?.toString();
-    utils.validateFriendlyName(name, true);
-    if (getRoutine(name)) {
-        throw new Error(`friendly_name '${name}' is already in use`);
-    }
-
     const settings = getInternalSettings();
     if (!settings.routines) {
         settings.routines = {};
     }
 
-    if (ID == null) {
-        // look for free ID
-        ID = '1';
-        while (settings.routines.hasOwnProperty(ID)) {
-            ID = (Number.parseInt(ID) + 1).toString();
-        }
+    let routineId = routine.ID;
+    if (routineId == null) {
+        routineId = randomUUID();
     } else {
-        // ensure provided ID is not in use
-        ID = ID.toString();
-        if (settings.routines.hasOwnProperty(ID)) {
-            throw new Error(`Routine ID '${ID}' is already in use`);
+        if (settings.routines.hasOwnProperty(routineId)) {
+            throw new Error(`Routine ID '${routineId}' is already in use`);
         }
     }
 
-    routine.ID = Number.parseInt(ID);
-    settings.routines[ID] = routine;
+    routine.ID = routineId;
+    settings.routines[routineId] = routine;
     write();
 
-    return getRoutine(ID);
+    return getRoutine(routineId);
 }
 
-export function removeRoutine(IDorName: string | number): void {
-    const routine = getRoutine(IDorName);
-    if (!routine) {
-        throw new Error(`Routine '${IDorName}' does not exist`);
+export function updateRoutine(routine: RoutineOptions): RoutineOptions {
+    let routineId = routine.ID;
+    const settings = getInternalSettings();
+    if (!settings.routines || routineId == null || !settings.routines.hasOwnProperty(routineId)) {
+        throw new Error(`Routine ID '${routineId}' can not be found`);
     }
 
-    const routineID = routine.ID;
-    const settings = getInternalSettings();
-    delete settings.routines[routineID];
+    settings.routines[routineId] = routine;
     write();
+    return getRoutine(routineId);
+}
+
+export function removeRoutine(routineId: string | number): RoutineOptions {
+    const routine = getRoutine(routineId);
+    if (!routine) {
+        throw new Error(`Routine '${routineId}' does not exist`);
+    }
+
+    const settings = getInternalSettings();
+    delete settings.routines[routineId];
+    write();
+    return routine;
 }
 
 export function changeEntityOptions(IDorName: string, newOptions: KeyValue): boolean {

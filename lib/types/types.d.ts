@@ -318,8 +318,7 @@ declare global {
     }
 
     interface RoutineOptions {
-        ID?: number,
-        sceneId: string,
+        ID?: string,
         friendly_name: string,
         description: string,
         conditions: RoutineCondition[],
@@ -328,6 +327,7 @@ declare global {
 
     interface RoutineCondition {
         type: string
+        triggers?: RoutineConditionTrigger[]
     }
 
     interface RoutineAction {
@@ -335,6 +335,13 @@ declare global {
         device?: string,
         attributes?: KeyValue,
         seconds?: number
+    }
+
+    interface RoutineConditionTrigger {
+        time?: string,
+        days?: string[],
+        device?: string,
+        attributes?: KeyValue
     }
 }
 
