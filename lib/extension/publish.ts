@@ -37,6 +37,7 @@ interface ParsedTopic {ID: string, endpoint: string, attribute: string, type: 'g
 export default class Publish extends Extension {
     async start(): Promise<void> {
         this.eventBus.onMQTTMessage(this, this.onMQTTMessage);
+        this.eventBus.onRoutinePublish(this, this.onMQTTMessage)
     }
 
     parseTopic(topic: string): ParsedTopic | null {

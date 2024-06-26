@@ -74,6 +74,7 @@ data/coordinator_backup.json
 data/.storage
 data/database.db.backup
 data/extension
+data/certs
 
 # MacOS indexing file
 .DS_Store
