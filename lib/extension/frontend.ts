@@ -13,6 +13,7 @@ import utils from '../util/utils';
 import stringify from 'json-stable-stringify-without-jsonify';
 import Extension from './extension';
 import bind from 'bind-decorator';
+import SensaricBridge from './sensaric/sensaric-bridge';
 
 /**
  * This extension servers the frontend
@@ -29,12 +30,15 @@ export default class Frontend extends Extension {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private fileServer: RequestHandler;
     private wss: WebSocket.Server = null;
+    private sensaricBridge: SensaricBridge;
+
 
     constructor(zigbee: Zigbee, mqtt: MQTT, state: State, publishEntityState: PublishEntityState,
         eventBus: EventBus, enableDisableExtension: (enable: boolean, name: string) => Promise<void>,
         restartCallback: () => void, addExtension: (extension: Extension) => Promise<void>) {
         super(zigbee, mqtt, state, publishEntityState, eventBus, enableDisableExtension, restartCallback, addExtension);
         this.eventBus.onMQTTMessagePublished(this, this.onMQTTPublishMessage);
+        this.sensaricBridge = new SensaricBridge(this.mqttBaseTopic, this.host, this.port, zigbee, mqtt);
     }
 
     private isHttpsConfigured():boolean {
@@ -97,8 +101,10 @@ export default class Frontend extends Extension {
     }
 
     @bind private onRequest(request: http.IncomingMessage, response: http.ServerResponse): void {
-        // @ts-ignore
-        this.fileServer(request, response, finalhandler(request, response));
+        if (!this.sensaricBridge.handleRequest(request, response)) {
+            // @ts-ignore
+            this.fileServer(request, response, finalhandler(request, response));
+        }
     }
 
     private authenticate(request: http.IncomingMessage, cb: (authenticate: boolean) => void): void {
@@ -124,6 +130,7 @@ export default class Frontend extends Extension {
             if (!isBinary && data) {
                 const message = data.toString();
                 const {topic, payload} = JSON.parse(message);
+                console.log(topic)
                 this.mqtt.onMessage(`${this.mqttBaseTopic}/${topic}`, Buffer.from(stringify(payload)));
             }
         });
