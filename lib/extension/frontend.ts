@@ -101,10 +101,9 @@ export default class Frontend extends Extension {
     }
 
     @bind private onRequest(request: http.IncomingMessage, response: http.ServerResponse): void {
-        if (!this.sensaricBridge.handleRequest(request, response)) {
-            // @ts-ignore
-            this.fileServer(request, response, finalhandler(request, response));
-        }
+        this.sensaricBridge.handleRequest(request, response);
+        // @ts-ignore
+        this.fileServer(request, response, finalhandler(request, response));
     }
 
     private authenticate(request: http.IncomingMessage, cb: (authenticate: boolean) => void): void {
@@ -130,7 +129,6 @@ export default class Frontend extends Extension {
             if (!isBinary && data) {
                 const message = data.toString();
                 const {topic, payload} = JSON.parse(message);
-                console.log(topic)
                 this.mqtt.onMessage(`${this.mqttBaseTopic}/${topic}`, Buffer.from(stringify(payload)));
             }
         });
