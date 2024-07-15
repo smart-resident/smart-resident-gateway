@@ -63,7 +63,7 @@ export default class SensaricBridge {
             response.end(body);
             return true;
         }
-
+        console.log(parsedUrl.pathname)
         return false;
     }
     private getDeviceList(): DeviceExtended[] {

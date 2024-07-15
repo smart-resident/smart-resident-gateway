@@ -101,9 +101,12 @@ export default class Frontend extends Extension {
     }
 
     @bind private onRequest(request: http.IncomingMessage, response: http.ServerResponse): void {
-        this.sensaricBridge.handleRequest(request, response);
-        // @ts-ignore
-        this.fileServer(request, response, finalhandler(request, response));
+        this.sensaricBridge.handleRequest(request, response).then((status)=> {
+            if (!status) {
+                // @ts-ignore
+                this.fileServer(request, response, finalhandler(request, response));
+            }
+        });
     }
 
     private authenticate(request: http.IncomingMessage, cb: (authenticate: boolean) => void): void {
