@@ -147,8 +147,8 @@ export class Controller {
             await this.mqtt.connect();
         } catch (error) {
             logger.error(`MQTT failed to connect, exiting...`);
-            await this.zigbee.stop();
-            await this.exit(1);
+            // await this.zigbee.stop();
+            // await this.exit(1);
         }
 
         // Call extensions
